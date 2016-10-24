@@ -122,6 +122,10 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
     glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
 
+#ifdef _DEBUG
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif
+	
     if (fullscreen) {
         GLFWmonitor *monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode *mode = glfwGetVideoMode(monitor);
@@ -465,7 +469,7 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
 
     bool ret = false;
     mLastInteraction = glfwGetTime();
-    try {
+    //try {
         p -= Vector2i(1, 2);
 
         if (!mDragActive) {
@@ -486,10 +490,10 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
         mMousePos = p;
 
         return ret;
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-        abort();
-    }
+    //} catch (const std::exception &e) {
+    //    std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
+    //    abort();
+    //}
 }
 
 bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {

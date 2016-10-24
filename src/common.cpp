@@ -76,7 +76,7 @@ void mainloop(int refresh) {
         );
     }
 
-    try {
+    //try {
         while (mainloop_active) {
             int numScreens = 0;
             for (auto kv : __nanogui_screens) {
@@ -103,10 +103,10 @@ void mainloop(int refresh) {
 
         /* Process events once more */
         glfwPollEvents();
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
-        abort();
-    }
+    //} catch (const std::exception &e) {
+    //    std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
+    //    abort();
+    //}
 
     if (refresh > 0)
         refresh_thread.join();
