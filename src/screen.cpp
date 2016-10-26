@@ -499,7 +499,7 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
 bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
     mModifiers = modifiers;
     mLastInteraction = glfwGetTime();
-    try {
+    //try {
         if (mFocusPath.size() > 1) {
             const Window *window =
                 dynamic_cast<Window *>(mFocusPath[mFocusPath.size() - 2]);
@@ -540,10 +540,10 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 
         return mouseButtonEvent(mMousePos, button, action == GLFW_PRESS,
                                 mModifiers);
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-        abort();
-    }
+    //} catch (const std::exception &e) {
+    //    std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
+    //    abort();
+    //}
 }
 
 bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) {
