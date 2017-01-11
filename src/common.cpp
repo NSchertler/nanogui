@@ -237,11 +237,11 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
     ofn.lpstrFilter = filter.data();
 
     if (save) {
-        ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+        ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
         if (GetSaveFileNameA(&ofn) == FALSE)
             return "";
     } else {
-        ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+        ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
         if (GetOpenFileNameA(&ofn) == FALSE)
             return "";
     }
