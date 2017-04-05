@@ -1,5 +1,9 @@
 # This file is part of exhale: https://github.com/svenevs/exhale
 #
+# This file was generated on/around (date -Ru):
+#
+#             Fri, 20 Jan 2017 21:14:23 +0000
+#
 # Copyright (c) 2016, Stephen McDowell
 # All rights reserved.
 #
@@ -32,8 +36,13 @@ from breathe.parser.index import parse as breathe_parse
 import sys
 import re
 import os
-import cStringIO
 import itertools
+try:
+    # Python 2 StringIO
+    from cStringIO import StringIO
+except ImportError:
+    # Python 3 StringIO
+    from io import StringIO
 
 __all__ = ['generate', 'ExhaleRoot', 'ExhaleNode', 'exclaimError', 'qualifyKind',
            'kindAsBreatheDirective', 'specificationsForKind', 'EXHALE_FILE_HEADING',
@@ -971,7 +980,7 @@ class ExhaleNode:
                 An integer greater than or equal to 0 representing the indentation level
                 for this node.
 
-            ``stream`` (cStringIO.StringIO)
+            ``stream`` (StringIO)
                 The stream that is being written to by all of the nodes (created and
                 destroyed by the ExhaleRoot object).
 
@@ -987,6 +996,7 @@ class ExhaleNode:
                 parameter is False, and should only ever be set to True internally by
                 recursive calls to this method.
         '''
+        has_nested_children = False
         if self.inClassView():
             if not treeView:
                 stream.write("{}- :ref:`{}`\n".format('    ' * level, self.link_name))
@@ -998,15 +1008,16 @@ class ExhaleNode:
                     opening_li = '<li>'
                 # turn double underscores into underscores, then underscores into hyphens
                 html_link = self.link_name.replace("__", "_").replace("_", "-")
-                # should always have two parts
+                # should always have at least two parts (templates will have more)
                 title_as_link_parts = self.title.split(" ")
                 qualifier = title_as_link_parts[0]
-                link_title = title_as_link_parts[1]
+                link_title = " ".join(title_as_link_parts[1:])
+                link_title = link_title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                 html_link = '{} <a href="{}.html#{}">{}</a>'.format(qualifier,
                                                                     self.file_name.split('.rst')[0],
                                                                     html_link,
                                                                     link_title)
-                has_nested_children = False
+                # search for nested children to display as sub-items in the tree view
                 if self.kind == "class" or self.kind == "struct":
                     nested_enums      = []
                     nested_unions     = []
@@ -1118,7 +1129,7 @@ class ExhaleNode:
                 An integer greater than or equal to 0 representing the indentation level
                 for this node.
 
-            ``stream`` (cStringIO.StringIO)
+            ``stream`` (StringIO)
                 The stream that is being written to by all of the nodes (created and
                 destroyed by the ExhaleRoot object).
 
@@ -1145,10 +1156,11 @@ class ExhaleNode:
                     opening_li = '<li>'
                 # turn double underscores into underscores, then underscores into hyphens
                 html_link = self.link_name.replace("__", "_").replace("_", "-")
-                # should always have two parts
+                # should always have at least two parts (templates will have more)
                 title_as_link_parts = self.title.split(" ")
                 qualifier = title_as_link_parts[0]
-                link_title = title_as_link_parts[1]
+                link_title = " ".join(title_as_link_parts[1:])
+                link_title = link_title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                 html_link = '{} <a href="{}.html#{}">{}</a>'.format(qualifier,
                                                                     self.file_name.split('.rst')[0],
                                                                     html_link,
@@ -2243,7 +2255,7 @@ class ExhaleRoot:
                         # double nested and beyond to appear after their parent by
                         # sorting on their name
                         nested_children.sort(key=lambda x: x.name)
-                        nested_child_stream = cStringIO.StringIO()
+                        nested_child_stream = StringIO()
                         for nc in nested_children:
                             nested_child_stream.write("- :ref:`{}`\n".format(nc.link_name))
 
@@ -2670,7 +2682,7 @@ class ExhaleRoot:
                 Whether or not to use the collapsibleList version.  See the
                 ``createTreeView`` description in :func:`exhale.generate`.
         '''
-        class_view_stream = cStringIO.StringIO()
+        class_view_stream = StringIO()
 
         for n in self.namespaces:
             n.toClassView(0, class_view_stream, treeView)
@@ -2700,7 +2712,7 @@ class ExhaleRoot:
             # need to restart since there were no missing children found, otherwise the
             # last namespace will not correctly have a lastChild
             class_view_stream.close()
-            class_view_stream = cStringIO.StringIO()
+            class_view_stream = StringIO()
 
             last_nspace_index = len(self.namespaces) - 1
             for idx in range(last_nspace_index + 1):
@@ -2743,7 +2755,7 @@ class ExhaleRoot:
                 Whether or not to use the collapsibleList version.  See the
                 ``createTreeView`` description in :func:`exhale.generate`.
         '''
-        directory_view_stream = cStringIO.StringIO()
+        directory_view_stream = StringIO()
 
         for d in self.dirs:
             d.toDirectoryView(0, directory_view_stream, treeView)
@@ -2765,7 +2777,7 @@ class ExhaleRoot:
             # need to restart since there were no missing children found, otherwise the
             # last directory will not correctly have a lastChild
             directory_view_stream.close()
-            directory_view_stream = cStringIO.StringIO()
+            directory_view_stream = StringIO()
 
             last_dir_index = len(self.dirs) - 1
             for idx in range(last_dir_index + 1):
